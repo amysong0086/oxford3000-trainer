@@ -6,16 +6,19 @@
 
 <style>
 body{font-family:Arial;background:#f4f6fb;padding:40px}
+.controls{margin-bottom:20px}
+button{padding:6px 12px;margin-right:10px;border:none;border-radius:6px;background:#4f46e5;color:white;cursor:pointer}
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-.card{background:white;padding:10px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
-.top{display:flex;gap:8px;align-items:center}
-.word{font-weight:bold;cursor:pointer}
-.pos{font-size:12px;color:#666}
+.card{background:white;padding:12px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+.top{display:flex;align-items:center;gap:10px}
+.word{font-size:18px;font-weight:bold;cursor:pointer}
+.pos{font-size:12px;color:#666;margin-top:4px}
 .unknown{border-left:5px solid red}
-button{cursor:pointer}
+.page-controls{margin:20px 0}
 </style>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
@@ -45,13 +48,25 @@ await setDoc(doc(db,"trainer","unknown"),{words:list});
 
 window.getUnknown = getUnknown;
 window.saveUnknown = saveUnknown;
+
 </script>
 
 </head>
 
 <body>
 
-<h2>Oxford3000 Listening Trainer</h2>
+<h2>Oxford 3000 Listening Trainer</h2>
+
+<div class="controls">
+<button onclick="showAll()">Show All</button>
+<button onclick="showUnknown()">Unknown ⭐</button>
+</div>
+
+<div class="page-controls">
+<button onclick="prevPage()">⬅ Prev</button>
+<span id="pageInfo"></span>
+<button onclick="nextPage()">Next ➡</button>
+</div>
 
 <div id="grid" class="grid"></div>
 
@@ -67,8 +82,31 @@ let words=[
 ["actress","n."],
 ["add","v."],
 ["address","n., v."],
-["adult","n., adj."]
+["adult","n., adj."],
+["advice","n."],
+["afraid","adj."],
+["after","prep."],
+["afternoon","n."],
+["again","adv."],
+["age","n."],
+["ago","adv."],
+["agree","v."],
+["air","n."],
+["airport","n."],
+["all","det., pron."],
+["also","adv."],
+["always","adv."],
+["amazing","adj."],
+["and","conj."],
+["angry","adj."],
+["animal","n."],
+["another","det./pron."],
+["answer","n., v."],
+["any","det., pron."]
 ];
+
+let page=0;
+const pageSize=30;
 
 function speak(word){
 let u=new SpeechSynthesisUtterance(word);
@@ -111,10 +149,12 @@ if(unknown.includes(w[0])){
 card.classList.add("unknown");
 }
 
+card.dataset.word=w[0];
+
 card.innerHTML=`
 <div class="top">
-<span onclick="speak('${w[0]}')">🔊</span>
-<span class="word">${w[0]}</span>
+<button onclick="speak('${w[0]}')">🔊</button>
+<div class="word">${w[0]}</div>
 <button onclick="toggleUnknown('${w[0]}')">⭐</button>
 </div>
 <div class="pos">${w[1]}</div>
@@ -124,9 +164,66 @@ grid.appendChild(card);
 
 });
 
+updatePage();
+
 }
 
-render();
+function updatePage(){
+
+let cards=[...document.querySelectorAll(".card")];
+
+let start=page*pageSize;
+let end=start+pageSize;
+
+cards.forEach((c,i)=>{
+
+if(i>=start && i<end){
+c.style.display="block";
+}else{
+c.style.display="none";
+}
+
+});
+
+let total=Math.ceil(cards.length/pageSize);
+document.getElementById("pageInfo").innerText="Page "+(page+1)+" / "+total;
+
+}
+
+function nextPage(){
+let total=Math.ceil(words.length/pageSize);
+if(page<total-1){
+page++;
+updatePage();
+}
+}
+
+function prevPage(){
+if(page>0){
+page--;
+updatePage();
+}
+}
+
+async function showUnknown(){
+
+let list=await window.getUnknown();
+
+document.querySelectorAll(".card").forEach(c=>{
+
+let w=c.dataset.word;
+
+c.style.display=list.includes(w)?"block":"none";
+
+});
+
+}
+
+function showAll(){
+updatePage();
+}
+
+window.addEventListener("load",render);
 
 </script>
 
