@@ -37,6 +37,8 @@ async function saveUnknown(list){
     words:list
   });
 
+window.getUnknown = getUnknown;
+window.saveUnknown = saveUnknown;
 }
 
 
@@ -151,33 +153,35 @@ speechSynthesis.cancel();
 speechSynthesis.speak(u);
 }
 
-function getUnknown(){
-return JSON.parse(localStorage.getItem("unknownWords")||"[]");
-}
-
-function saveUnknown(list){
-localStorage.setItem("unknownWords",JSON.stringify(list));
-}
-
 async function toggleUnknown(e,word){
+
 e.stopPropagation();
-let list=getUnknown();
-let idx=list.indexOf(word);
+
+let list = await getUnknown();
+
+let idx = list.indexOf(word);
 
 if(idx>-1) list.splice(idx,1);
 else list.push(word);
 
-let list = await getUnknown();
 await saveUnknown(list);
+
+renderMarks();
+
 }
 
-function renderMarks(){
-let list=getUnknown();
+async function renderMarks(){
+
+let list = await getUnknown();
+
 document.querySelectorAll(".card").forEach(c=>{
 let w=c.dataset.word;
+
 if(list.includes(w)) c.classList.add("unknown");
 else c.classList.remove("unknown");
+
 });
+
 }
 
 function showAll(){
