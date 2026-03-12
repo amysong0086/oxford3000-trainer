@@ -20,6 +20,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+async function getUnknown(){
+
+  const snap = await getDoc(doc(db,"trainer","unknown"));
+
+  if(snap.exists()){
+    return snap.data().words;
+  }
+
+  return [];
+}
+
+async function saveUnknown(list){
+
+  await setDoc(doc(db,"trainer","unknown"),{
+    words:list
+  });
+
+}
+
+window.getUnknown = getUnknown;
+window.saveUnknown = saveUnknown;
+
 </script>
 
 <meta charset="UTF-8">
