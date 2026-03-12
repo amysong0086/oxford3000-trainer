@@ -159,7 +159,7 @@ function saveUnknown(list){
 localStorage.setItem("unknownWords",JSON.stringify(list));
 }
 
-function toggleUnknown(e,word){
+async function toggleUnknown(e,word){
 e.stopPropagation();
 let list=getUnknown();
 let idx=list.indexOf(word);
@@ -167,8 +167,8 @@ let idx=list.indexOf(word);
 if(idx>-1) list.splice(idx,1);
 else list.push(word);
 
-saveUnknown(list);
-renderMarks();
+let list = await getUnknown();
+await saveUnknown(list);
 }
 
 function renderMarks(){
