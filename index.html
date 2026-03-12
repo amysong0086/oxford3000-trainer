@@ -2,6 +2,26 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBVlNXPAI7w940OdAQ4sBGXfZgFfTsG8Eo",
+  authDomain: "oxford3000-trainer.firebaseapp.com",
+  projectId: "oxford3000-trainer",
+  storageBucket: "oxford3000-trainer.firebasestorage.app",
+  messagingSenderId: "1057287872583",
+  appId: "1:1057287872583:web:b599f42ce546405af29162"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+</script>
+
 <meta charset="UTF-8">
 <title>Oxford3000 Listening Trainer</title>
 
